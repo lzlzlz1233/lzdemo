@@ -17,16 +17,20 @@ class RemoteMovieDataSourceImpl @Inject constructor( val apiService: GetMovieApi
         return movies
     }
 
-    override suspend fun searchMovies(name: String): MovieEntity {
-        TODO("Not yet implemented")
+    override suspend fun searchMovies(name: String): List<MovieEntity>  {
+        val movies = apiService.searchMovies(name, 1).data?.map {
+            convertToMovieEntity(it)
+        }?: run{
+            emptyList()
+        }
+        return movies
     }
-
     private fun convertToMovieEntity(rawApiModel : MoviesApiModel ) =
         MovieEntity(
             id = rawApiModel.id,
             name = rawApiModel.name,
-            backDropPath = rawApiModel.backDropPath,
-            posterPath = rawApiModel.posterPath,
+            backDropPath = rawApiModel.backDropPath?:"NA",
+            posterPath = rawApiModel.posterPath?:"NA",
         )
 
 }

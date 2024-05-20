@@ -6,7 +6,6 @@ import androidx.annotation.RequiresExtension
 import com.example.domain.Interface.RemoteMovieDataSource
 import com.example.domain.di.IoDispatcher
 import com.example.domain.entities.ErrorType
-import com.example.domain.entities.Locale
 import com.example.domain.entities.Result
 import com.example.domain.entities.Window
 import com.squareup.moshi.JsonDataException
@@ -28,9 +27,9 @@ class RemoteMovieRepository @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    suspend fun getMovies(window : Window, language: Locale) : Result<*> = withContext(dispatcher){
+    suspend fun getMovies(window : Window, language: String) : Result<*> = withContext(dispatcher){
         try {
-            return@withContext Result.Success(remoteDataSource.getTrendingMovies(window.name, language.name))
+            return@withContext Result.Success(remoteDataSource.getTrendingMovies(window.name, language))
         } catch (exception: Throwable) {
             when(exception){
                 is HttpException ->  return@withContext Result.Error(ErrorType.HTTP.name)
@@ -39,6 +38,23 @@ class RemoteMovieRepository @Inject constructor(
                 else -> {return@withContext Result.Error(ErrorType.OTHER.name)}
             }
         }
+    }
+
+
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    suspend fun searchMovies(query :String) : Result<*> = withContext(dispatcher){
+        val a = remoteDataSource.searchMovies(query)
+//        try {
+//            return@withContext Result.Success(remoteDataSource.searchMovies(query))
+//        } catch (exception: Throwable) {
+//            when(exception){
+//                is HttpException ->  return@withContext Result.Error(ErrorType.HTTP.name)
+//                is IOException -> return@withContext  Result.Error(ErrorType.IO.name)
+//                is JsonDataException -> return@withContext Result.Error(ErrorType.MALFORMED.name)
+//                else -> {return@withContext Result.Error(ErrorType.OTHER.name)}
+//            }
+//        }
+        return@withContext Result.Success(remoteDataSource.searchMovies(query))
     }
 }
 

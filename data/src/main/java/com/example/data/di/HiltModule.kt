@@ -64,7 +64,7 @@ class HiltModule {
 //    fun provideUserDao(appDatabase: AppDatabase): EmployeeDao = appDatabase.employeeDao()
 
     companion object {
-        private const val BASE_URL = "https://s3.amazonaws.com/sq-mobile-interview/"
+        private const val BASE_URL = "https://api.themoviedb.org/3/"
     }
 
 }
