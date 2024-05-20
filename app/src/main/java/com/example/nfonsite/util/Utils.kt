@@ -30,13 +30,6 @@ sealed class UiState<out T : Any> {
 
 fun MovieEntity.toHeaderItem() = FeedItem.MovieItem(movie = MovieItemSpec(id = this.id, imgPath = this.posterPath, overView = this.overview))
 
-
-fun combineItems(
-    oldItems: List<FeedItem>,
-    newItems: List<FeedItem>
-) = oldItems + newItems
-
-
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 fun Result<*>.applyToState(
     originalList: MutableList<FeedItem>,

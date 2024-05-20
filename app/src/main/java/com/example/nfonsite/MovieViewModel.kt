@@ -7,8 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.entities.DataState
-import com.example.domain.entities.ErrorType
 import com.example.domain.entities.Window
 import com.example.domain.repository.RemoteMovieRepository
 import com.example.nfonsite.uiModel.FeedItem
@@ -16,10 +14,7 @@ import com.example.nfonsite.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.example.domain.entities.Result
 import com.example.nfonsite.util.applyToState
-import com.example.nfonsite.util.convertToUiState
-import com.example.nfonsite.util.toHeaderItem
 
 /**
  * Core View Model used by [MainFragment] for movie list rendering
@@ -35,48 +30,34 @@ class MovieViewModel @Inject constructor(
 
     private var _data: MutableLiveData<UiState<ScreenContent>> = MutableLiveData()
     val data: LiveData<UiState<ScreenContent>> get() = _data
-    private fun shouldReload(): Boolean {
-        return when (data.value) {
-            is UiState.Success -> {
-                return (data.value as UiState.Success<ScreenContent>).data.items.isEmpty()
-            }
-
-            UiState.Empty -> true
-            is UiState.Error -> true
-            UiState.Loading -> true
-            null -> true
-        }
-    }
-
-    fun getSavedData() {
-        val savedData: UiState<ScreenContent>? =
-            savedStateHandle.getLiveData<UiState<ScreenContent>>(STATE_KEY).value
-        _data.value = savedData ?: UiState.Empty
-    }
 
     fun getList() {
         getSavedData()
         if (shouldReload() || data.value is UiState.Empty || data.value is UiState.Error) {
-            getEmployeesFromRemoteSource(Window.day, lan = "en-US")
-        }
-    }
-
-    fun updateSearchQuery(query: String) {
-        when (_data.value) {
-            is UiState.Success -> {
-                (_data.value as UiState.Success<ScreenContent>).data.query = query
-            }
-
-            else -> Unit
+            getMoviesFromRemoteSource(DEFAULT_TENDING, lan = DEFAULT_LOCALE)
         }
     }
 
     fun search(query: String) {
         if (query.isEmpty()) {
             clear()
-            getEmployeesFromRemoteSource(Window.day, lan = "en-US")
+            getMoviesFromRemoteSource(window = DEFAULT_TENDING, lan = DEFAULT_LOCALE)
         } else {
             searchMovie(query)
+        }
+    }
+
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    private fun searchMovie(query: String) {
+        if (!shouldLoadNewItems()) return
+        if (isNewQuery(query)) clear()
+        val offset = getCurrentOffset()
+        _data.value = UiState.Loading
+        viewModelScope.launch {
+            repository.searchMovies(query, offset).applyToState(
+                originalList = _movieList,
+                query = query, data = _data, onSaveState = ::saveMovieState
+            )
         }
     }
 
@@ -84,13 +65,22 @@ class MovieViewModel @Inject constructor(
      * Get Data from remote source using [RemoteMovieRepository]
      */
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    private fun getEmployeesFromRemoteSource(window: Window, lan: String) {
+    private fun getMoviesFromRemoteSource(window: Window, lan: String) {
         if (!shouldLoadNewItems()) return
+        val offset = getCurrentOffset()
         _data.value = UiState.Loading
         viewModelScope.launch {
-            repository.getMovies(window, lan, getCurrentOffset()).applyToState(
+            repository.getMovies(window, lan, offset).applyToState(
                 originalList = _movieList, data = _data, onSaveState = ::saveMovieState
             )
+        }
+    }
+    private fun updateSearchQuery(query: String) {
+        when (_data.value) {
+            is UiState.Success -> {
+                (_data.value as UiState.Success<ScreenContent>).data.query = query
+            }
+            else -> Unit
         }
     }
 
@@ -101,7 +91,6 @@ class MovieViewModel @Inject constructor(
                 if (ifNew) updateSearchQuery(query = q)
                 return ifNew
             }
-
             else -> true
         }
     }
@@ -118,17 +107,10 @@ class MovieViewModel @Inject constructor(
         else -> 1
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    private fun searchMovie(query: String) {
-        if (!shouldLoadNewItems()) return
-        if (isNewQuery(query)) clear()
-        _data.value = UiState.Loading
-        viewModelScope.launch {
-            repository.searchMovies(query, getCurrentOffset()).applyToState(
-                originalList = _movieList,
-                query = query, data = _data, onSaveState = ::saveMovieState
-            )
-        }
+    private fun getSavedData() {
+        val savedData: UiState<ScreenContent>? =
+            savedStateHandle.getLiveData<UiState<ScreenContent>>(STATE_KEY).value
+        _data.value = savedData ?: UiState.Empty
     }
 
     fun saveMovieState(item: UiState<ScreenContent>) {
@@ -137,7 +119,7 @@ class MovieViewModel @Inject constructor(
 
     fun refresh() {
         clear()
-        getEmployeesFromRemoteSource(Window.day, lan = "en-US")
+        getMoviesFromRemoteSource(DEFAULT_TENDING, lan = DEFAULT_LOCALE)
 
     }
 
@@ -147,7 +129,7 @@ class MovieViewModel @Inject constructor(
                 searchMovie(it)
             }
         } else {
-            getEmployeesFromRemoteSource(Window.day, lan = "en-US")
+            getMoviesFromRemoteSource(DEFAULT_TENDING, lan = DEFAULT_LOCALE)
         }
     }
 
@@ -163,10 +145,14 @@ class MovieViewModel @Inject constructor(
 
     fun canLoadMore() = _data.value is UiState.Success || _data.value is UiState.Empty
 
-    companion object {
-        val STATE_KEY = "saved_state"
+    private fun shouldReload(): Boolean {
+        return when (data.value) {
+            is UiState.Success -> {
+                return (data.value as UiState.Success<ScreenContent>).data.items.isEmpty()
+            }
+            else -> true
+        }
     }
-
 
     data class ScreenContent(
         val items: List<FeedItem> = emptyList(),
@@ -174,6 +160,13 @@ class MovieViewModel @Inject constructor(
         var nextOffset: Int = 1,
         val canLoadMore: Boolean = true
     )
+
+    companion object {
+        val STATE_KEY = "saved_state"
+        val DEFAULT_TENDING = Window.day
+        val DEFAULT_LOCALE= "en-US"
+
+    }
 
 
 }

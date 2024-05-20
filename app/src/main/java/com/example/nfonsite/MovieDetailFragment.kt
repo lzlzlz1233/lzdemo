@@ -9,14 +9,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.example.nfonsite.databinding.DialogFragmentBinding
-import com.example.nfonsite.uiModel.FeedItem
 
 class MovieDetailFragment : DialogFragment() {
 
     private var _binding: DialogFragmentBinding? = null
     val binding: DialogFragmentBinding get() = _binding!!
-
-    private var item: FeedItem.MovieItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,11 +30,11 @@ class MovieDetailFragment : DialogFragment() {
         return binding.root
     }
 
-    fun setUpStyle(){
-        getDialog()?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+    private fun setUpStyle(){
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
     }
 
-    fun setUp(img: String?, name : String?, overview: String?){
+    private fun setUp(img: String?, name : String?, overview: String?){
         binding.title.text = img
         binding.overView.text = overview
         context?.let {

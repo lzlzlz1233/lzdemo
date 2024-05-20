@@ -102,7 +102,6 @@ class MainFragment : Fragment() {
     }
 
     private fun openMovieDetail(item : FeedItem){
-
         val fragment = MovieDetailFragment()
         fragment.arguments = Bundle().apply {
             val movie = (item as FeedItem.MovieItem).movie
@@ -113,7 +112,6 @@ class MainFragment : Fragment() {
         activity?.supportFragmentManager?.beginTransaction()?.add(fragment,FRAG_TAG)?.commitNowAllowingStateLoss()
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun updateUi(state: UiState<MovieViewModel.ScreenContent>) {
         when (state) {
             is UiState.Error -> {
@@ -153,14 +151,12 @@ class MainFragment : Fragment() {
         binding.errorView.visibility = GONE
 
     }
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun setUpErrorView(res: Int) {
         context?.getString(res)
             ?.let { binding.errorView.setUp(it, this::onReloadClick) }
         binding.errorView.visibility = VISIBLE
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun onReloadClick() {
         viewModel.refresh()
     }
