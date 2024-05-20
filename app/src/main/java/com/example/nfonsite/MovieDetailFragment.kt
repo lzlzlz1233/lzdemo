@@ -36,7 +36,7 @@ class MovieDetailFragment : DialogFragment() {
     fun setUpStyle(){
         getDialog()?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
     }
-    
+
     fun setUp(img: String?, name : String?, overview: String?){
         binding.title.text = img
         binding.overView.text = overview

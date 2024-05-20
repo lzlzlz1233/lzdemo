@@ -27,9 +27,9 @@ class RemoteMovieRepository @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    suspend fun getMovies(window : Window, language: String) : Result<*> = withContext(dispatcher){
+    suspend fun getMovies(window : Window, language: String, offset: Int) : Result<*> = withContext(dispatcher){
         try {
-            return@withContext Result.Success(remoteDataSource.getTrendingMovies(window.name, language))
+            return@withContext Result.Success(remoteDataSource.getTrendingMovies(window.name, language, offset))
         } catch (exception: Throwable) {
             when(exception){
                 is HttpException ->  return@withContext Result.Error(ErrorType.HTTP.name)
@@ -42,19 +42,17 @@ class RemoteMovieRepository @Inject constructor(
 
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    suspend fun searchMovies(query :String) : Result<*> = withContext(dispatcher){
-        val a = remoteDataSource.searchMovies(query)
-//        try {
-//            return@withContext Result.Success(remoteDataSource.searchMovies(query))
-//        } catch (exception: Throwable) {
-//            when(exception){
-//                is HttpException ->  return@withContext Result.Error(ErrorType.HTTP.name)
-//                is IOException -> return@withContext  Result.Error(ErrorType.IO.name)
-//                is JsonDataException -> return@withContext Result.Error(ErrorType.MALFORMED.name)
-//                else -> {return@withContext Result.Error(ErrorType.OTHER.name)}
-//            }
-//        }
-        return@withContext Result.Success(remoteDataSource.searchMovies(query))
+    suspend fun searchMovies(query :String, offset: Int) : Result<*> = withContext(dispatcher){
+        try {
+            return@withContext Result.Success(remoteDataSource.searchMovies(query, offset))
+        } catch (exception: Throwable) {
+            when(exception){
+                is HttpException ->  return@withContext Result.Error(ErrorType.HTTP.name)
+                is IOException -> return@withContext  Result.Error(ErrorType.IO.name)
+                is JsonDataException -> return@withContext Result.Error(ErrorType.MALFORMED.name)
+                else -> {return@withContext Result.Error(ErrorType.OTHER.name)}
+            }
+        }
     }
 }
 

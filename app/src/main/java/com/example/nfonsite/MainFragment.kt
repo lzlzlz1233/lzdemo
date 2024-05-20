@@ -1,5 +1,6 @@
 package com.example.nfonsite
 
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
@@ -9,12 +10,8 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.annotation.RequiresExtension
-import androidx.core.view.marginEnd
-import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.entities.ErrorType
@@ -24,14 +21,15 @@ import com.example.nfonsite.MovieDetailFragment.Companion.NAME_KEY
 import com.example.nfonsite.MovieDetailFragment.Companion.OVER_VIEW_KEY
 import com.example.nfonsite.databinding.MainFragmentBinding
 import com.example.nfonsite.uiModel.FeedItem
-import com.example.nfonsite.uiModel.MovieItemSpec
 import com.example.nfonsite.util.MovieAdapter
 import com.example.nfonsite.util.UiState
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 class MainFragment : Fragment() {
 
-    private val SPAN_COUNT  = 3
+    private val PORTRIAT_SPAN_COUNT  = 3
+    private val LANDSCAPE_SPAN_COUNT  = 6
+
     private var _binding: MainFragmentBinding? = null
     val binding: MainFragmentBinding get() = _binding!!
 
@@ -50,14 +48,44 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = this.context?.let { MovieAdapter(it, this:: openMovieDetail) }
+        binding.search.clearFocus()
+        if (adapter == null){
+            adapter = this.context?.let { MovieAdapter(it, this::openMovieDetail) }
+        }
         binding.recycler.adapter = adapter
-        binding.recycler.layoutManager = GridLayoutManager(context, SPAN_COUNT)
-        binding.recycler.setPadding(0,0,0,0)
+        setUpSpan()
+        binding.recycler.setPadding(0, 0, 0, 0)
         viewModel.data.observe(viewLifecycleOwner, this::updateUi)
         viewModel.getList()
         setUpSearchBar()
-        binding.search.setOnClickListener {
+
+        binding.swipeLayout.apply {
+            this.setOnRefreshListener {
+                binding.search.clearFocus()
+                binding.search.text.clear()
+                adapter?.updateList(emptyList())
+                viewModel.refresh()
+            }
+        }
+
+        binding.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!recyclerView.canScrollVertically(1) && viewModel.canLoadMore()){
+                    viewModel.loadMore()
+                }
+            }
+        })
+    }
+
+    private fun setUpSpan(){
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // In landscape
+            binding.recycler.layoutManager = GridLayoutManager(context, LANDSCAPE_SPAN_COUNT)
+        } else {
+            // In portrait
+            binding.recycler.layoutManager = GridLayoutManager(context, PORTRIAT_SPAN_COUNT)
 
         }
     }
@@ -85,7 +113,6 @@ class MainFragment : Fragment() {
         activity?.supportFragmentManager?.beginTransaction()?.add(fragment,FRAG_TAG)?.commitNowAllowingStateLoss()
     }
 
-
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun updateUi(state: UiState<MovieViewModel.ScreenContent>) {
         when (state) {
@@ -101,12 +128,14 @@ class MainFragment : Fragment() {
             }
 
             is UiState.Success -> {
+                binding.search.setText(state.data.query)
                 binding.swipeLayout.isRefreshing = false
                 if (state.data.items.isEmpty()) {
                     setUpErrorView(R.string.no_found)
+                }else{
+                    hideErrorView()
                 }
                 adapter?.updateList(state.data.items)
-                hideErrorView()
             }
 
             is UiState.Loading -> {
@@ -122,6 +151,7 @@ class MainFragment : Fragment() {
 
     private fun hideErrorView(){
         binding.errorView.visibility = GONE
+
     }
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun setUpErrorView(res: Int) {
@@ -132,8 +162,17 @@ class MainFragment : Fragment() {
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun onReloadClick() {
-//        viewModel.refresh()
+        viewModel.refresh()
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.search.clearFocus()
+    }
+
+
+
+
 
 
 }

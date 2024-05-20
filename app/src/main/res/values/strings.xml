@@ -4,7 +4,7 @@
     <string name="io_exception">Oops! Something went wrong.Please Check network connection</string>
     <string name="data_exception">Oops! Looks like data is corrupted.</string>
     <string name="default_mssage">Oops! Something went wrong. Please Try Again.</string>
-    <string name="no_found">No Employees Found."</string>
+    <string name="no_found">Ooops we cant find the movie your are lookin for :(."</string>
     <string name="search_hint">Search</string>
 
 </resources>

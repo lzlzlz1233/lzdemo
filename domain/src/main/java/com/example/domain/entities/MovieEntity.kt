@@ -6,4 +6,12 @@ data class MovieEntity(
     val backDropPath: String,
     val posterPath: String,
     val overview: String ?= null,
+    val page: Int = 1,
     )
+
+
+data class DataState(
+    val items: List<MovieEntity>,
+    val page :Int,
+    val canLoadMore :Boolean
+)

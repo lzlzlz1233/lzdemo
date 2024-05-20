@@ -8,6 +8,8 @@
         android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:saveEnabled="false"
+
         android:paddingHorizontal="12dp"
         android:paddingVertical="16dp"
         android:layout_marginVertical="12dp"
@@ -34,10 +36,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.example.nfonsite.views.ErrorLoadingView
         android:id="@+id/error_view"

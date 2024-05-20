@@ -1,9 +1,12 @@
 package com.example.nfonsite.util
 
+import android.media.RouteListingPreference.Item
+import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.entities.MovieEntity
 import java.io.Serializable
 
 import com.example.domain.entities.Result
+import com.example.nfonsite.MovieViewModel
 import com.example.nfonsite.uiModel.FeedItem
 import com.example.nfonsite.uiModel.MovieItemSpec
 
@@ -19,6 +22,13 @@ sealed class UiState<out T : Any> {
     data object Empty : UiState<Nothing>()
     data class Error(val errorMessage: String?) : UiState<Nothing>(), Serializable
     data class Success<T : Any>(val data: T) : UiState<T>(), Serializable
+
 }
 
 fun MovieEntity.toHeaderItem() = FeedItem.MovieItem(movie = MovieItemSpec(id = this.id, imgPath = this.posterPath, overView = this.overview))
+
+
+fun combineItems(
+    oldItems: List<FeedItem>,
+    newItems: List<FeedItem>
+) = oldItems + newItems

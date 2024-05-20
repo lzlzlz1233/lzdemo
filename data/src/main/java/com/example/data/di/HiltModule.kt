@@ -47,21 +47,7 @@ class HiltModule {
 
     @Provides
     fun providesRemoteMovieDataSource(retrofit: Retrofit) : GetMovieApiService = retrofit.create(GetMovieApiService :: class.java)
-
-
-//    @Provides
-//    fun provideLocalInteractionDataSourceImpl(@ApplicationContext context: Context) =
-//        PersistenceDataSourceImpl(context.dataStore)
-
-//    @Provides
-//    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
-//        Room.databaseBuilder(
-//            context,
-//            AppDatabase::class.java, "my-database"
-//        ).build()
-
-//    @Provides
-//    fun provideUserDao(appDatabase: AppDatabase): EmployeeDao = appDatabase.employeeDao()
+    
 
     companion object {
         private const val BASE_URL = "https://api.themoviedb.org/3/"
