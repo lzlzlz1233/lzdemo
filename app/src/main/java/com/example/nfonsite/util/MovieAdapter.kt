@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.nfonsite.uiModel.FeedItem
 import com.example.nfonsite.views.MovieItemView
 
-class MovieAdapter(private val context: Context): RecyclerView.Adapter<MovieAdapter.MyViewHolder>() {
+class MovieAdapter(private val context: Context, private val onClick : (FeedItem) -> Unit): RecyclerView.Adapter<MovieAdapter.MyViewHolder>() {
 
     private var list : List<FeedItem> = emptyList()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder = when(viewType){
@@ -20,7 +20,7 @@ class MovieAdapter(private val context: Context): RecyclerView.Adapter<MovieAdap
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
        val view = holder.itemView
         when (view){
-            is MovieItemView -> view.setup(list[position] as FeedItem.MovieItem)
+            is MovieItemView -> view.setup(list[position] as FeedItem.MovieItem, onClick)
         }
     }
     override fun getItemCount() = list.size

@@ -7,10 +7,8 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.request.RequestOptions
 import com.example.nfonsite.R
-import com.example.nfonsite.databinding.ErrorLoadingViewBinding
 import com.example.nfonsite.databinding.MovieItemViewBinding
 import com.example.nfonsite.uiModel.FeedItem
 
@@ -24,7 +22,7 @@ class MovieItemView @JvmOverloads constructor(
         MovieItemViewBinding.inflate(LayoutInflater.from(context), this, true)
 
     @SuppressLint("CheckResult")
-    fun setup(item: FeedItem.MovieItem) {
+    fun setup(item: FeedItem.MovieItem, onClick: (FeedItem) -> Unit) {
         /*
      Ensure all memory and disk caches are used in Glide
       */
@@ -32,7 +30,9 @@ class MovieItemView @JvmOverloads constructor(
             this.skipMemoryCache(false)
             this.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         }
-
+        this.setOnClickListener {
+            onClick(item)
+        }
         val url ="https://image.tmdb.org/t/p/w500" + item.movie.imgPath
         val width = resources.displayMetrics.widthPixels /3
         Glide.with(context)

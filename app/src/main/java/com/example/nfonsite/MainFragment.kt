@@ -18,7 +18,13 @@ import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.entities.ErrorType
+import com.example.nfonsite.MovieDetailFragment.Companion.FRAG_TAG
+import com.example.nfonsite.MovieDetailFragment.Companion.IMAGE_KEY
+import com.example.nfonsite.MovieDetailFragment.Companion.NAME_KEY
+import com.example.nfonsite.MovieDetailFragment.Companion.OVER_VIEW_KEY
 import com.example.nfonsite.databinding.MainFragmentBinding
+import com.example.nfonsite.uiModel.FeedItem
+import com.example.nfonsite.uiModel.MovieItemSpec
 import com.example.nfonsite.util.MovieAdapter
 import com.example.nfonsite.util.UiState
 
@@ -44,7 +50,7 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = this.context?.let { MovieAdapter(it) }
+        adapter = this.context?.let { MovieAdapter(it, this:: openMovieDetail) }
         binding.recycler.adapter = adapter
         binding.recycler.layoutManager = GridLayoutManager(context, SPAN_COUNT)
         binding.recycler.setPadding(0,0,0,0)
@@ -67,8 +73,16 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun openMovieDetail(){
-        activity?.supportFragmentManager?.beginTransaction()?.add(MovieDetailFragment(),"TAG")?.commitNowAllowingStateLoss()
+    private fun openMovieDetail(item : FeedItem){
+
+        val fragment = MovieDetailFragment()
+        fragment.arguments = Bundle().apply {
+            val movie = (item as FeedItem.MovieItem).movie
+            this.putString(NAME_KEY, movie.id)
+            this.putString(IMAGE_KEY, "https://image.tmdb.org/t/p/w500" + movie.imgPath)
+            this.putString(OVER_VIEW_KEY, movie.overView)
+        }
+        activity?.supportFragmentManager?.beginTransaction()?.add(fragment,FRAG_TAG)?.commitNowAllowingStateLoss()
     }
 
 

@@ -21,4 +21,4 @@ sealed class UiState<out T : Any> {
     data class Success<T : Any>(val data: T) : UiState<T>(), Serializable
 }
 
-fun MovieEntity.toHeaderItem() = FeedItem.MovieItem(movie = MovieItemSpec(id = this.id, imgPath = this.posterPath))
+fun MovieEntity.toHeaderItem() = FeedItem.MovieItem(movie = MovieItemSpec(id = this.id, imgPath = this.posterPath, overView = this.overview))
