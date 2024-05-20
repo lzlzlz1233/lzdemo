@@ -10,13 +10,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RemoteDataSourceModule {
-
-//    @Binds
-//    abstract fun bindPersistenceDataSource(interactionDataStore: PersistenceDataSourceImpl): PersistenceDataSource
-//
-//    @Binds
-//    abstract fun bindLocalDataSource(lostDataSourceImpl: LocalDataSourceImpl): LocalDataSource
-
     @Binds
     abstract fun bindRemoteMovieDataSource(remoteMovieDataSourceImpl: RemoteMovieDataSourceImpl) : RemoteMovieDataSource
 }

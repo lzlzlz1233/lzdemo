@@ -47,7 +47,7 @@ class HiltModule {
 
     @Provides
     fun providesRemoteMovieDataSource(retrofit: Retrofit) : GetMovieApiService = retrofit.create(GetMovieApiService :: class.java)
-    
+
 
     companion object {
         private const val BASE_URL = "https://api.themoviedb.org/3/"

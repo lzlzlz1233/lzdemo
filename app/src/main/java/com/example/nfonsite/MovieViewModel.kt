@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.entities.DataState
 import com.example.domain.entities.ErrorType
-import com.example.domain.entities.MovieEntity
 import com.example.domain.entities.Window
 import com.example.domain.repository.RemoteMovieRepository
 import com.example.nfonsite.uiModel.FeedItem
@@ -18,9 +17,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.domain.entities.Result
+import com.example.nfonsite.util.applyToState
 import com.example.nfonsite.util.convertToUiState
 import com.example.nfonsite.util.toHeaderItem
-import java.io.Serializable
 
 /**
  * Core View Model used by [MainFragment] for movie list rendering
@@ -76,7 +75,7 @@ class MovieViewModel @Inject constructor(
         if (query.isEmpty()) {
             clear()
             getEmployeesFromRemoteSource(Window.day, lan = "en-US")
-        }else{
+        } else {
             searchMovie(query)
         }
     }
@@ -86,46 +85,12 @@ class MovieViewModel @Inject constructor(
      */
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun getEmployeesFromRemoteSource(window: Window, lan: String) {
-        // if ui is already loading , we should not perform api call again
-        if (_data.value == UiState.Loading) return
-        if (_data.value is UiState.Success && !(_data.value as UiState.Success).data.canLoadMore) return
-
-        var offset = 1
-        if (_data.value is UiState.Success) {
-            (_data.value as UiState.Success).apply {
-                offset = this.data.nextOffset
-            }
-        }
+        if (!shouldLoadNewItems()) return
         _data.value = UiState.Loading
         viewModelScope.launch {
-            repository.getMovies(window, lan, offset).apply {
-                when (this) {
-                    is Result.Success -> {
-                        if (this.data is DataState) {
-                            val newMovieList =
-                                (this.data as DataState).items.map {
-                                    it.toHeaderItem()
-                                }
-                            _movieList.addAll(newMovieList)
-                            _data.value =
-                                this.convertToUiState {
-                                    ScreenContent(
-                                        items = _movieList,
-                                        query = "",
-                                        canLoadMore = (this.data as DataState).canLoadMore,
-                                        nextOffset = (this.data as DataState).page + 1
-                                    )
-                                }
-                            saveMovieState(_data.value!!)
-                            // adding sharedPref here if necessary
-                        } else {
-                            UiState.Error(ErrorType.OTHER.name)
-                        }
-                    }
-
-                    is Result.Error -> _data.value = UiState.Error(this.errorMessage)
-                }
-            }
+            repository.getMovies(window, lan, getCurrentOffset()).applyToState(
+                originalList = _movieList, data = _data, onSaveState = ::saveMovieState
+            )
         }
     }
 
@@ -136,51 +101,33 @@ class MovieViewModel @Inject constructor(
                 if (ifNew) updateSearchQuery(query = q)
                 return ifNew
             }
+
             else -> true
         }
     }
 
+    private fun shouldLoadNewItems(): Boolean {
+        // if ui is already loading , we should not perform api call again
+        if (_data.value is UiState.Loading) return false
+        if (_data.value is UiState.Success && !(_data.value as UiState.Success).data.canLoadMore) return false
+        return true
+    }
+
+    private fun getCurrentOffset() = when (_data.value) {
+        is UiState.Success -> (_data.value as UiState.Success).data.nextOffset
+        else -> 1
+    }
+
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun searchMovie(query: String) {
-        // if ui is already loading , we should not perform api call again
-        if (_data.value == UiState.Loading) return
-        if (_data.value is UiState.Success && !(_data.value as UiState.Success).data.canLoadMore) return
-        var offset = 1
-        if (_data.value is UiState.Success) {
-            (_data.value as UiState.Success).apply {
-                offset = this.data.nextOffset
-            }
-        }
+        if (!shouldLoadNewItems()) return
         if (isNewQuery(query)) clear()
         _data.value = UiState.Loading
         viewModelScope.launch {
-            repository.searchMovies(query, offset).apply {
-                when (this) {
-                    is Result.Success -> {
-                        if (this.data is DataState) {
-                            val newMovieList =
-                                (this.data as DataState).items.map {
-                                    it.toHeaderItem()
-                                }
-                            _movieList.addAll(newMovieList)
-                            _data.value =
-                                this.convertToUiState {
-                                    ScreenContent(
-                                        items = _movieList,
-                                        query = query,
-                                        canLoadMore = (this.data as DataState).canLoadMore,
-                                        nextOffset = (this.data as DataState).page + 1
-                                    )
-                                }
-                            saveMovieState(_data.value!!)
-                        } else {
-                            UiState.Error(ErrorType.OTHER.name)
-                        }
-                    }
-
-                    is Result.Error -> _data.value = UiState.Error(this.errorMessage)
-                }
-            }
+            repository.searchMovies(query, getCurrentOffset()).applyToState(
+                originalList = _movieList,
+                query = query, data = _data, onSaveState = ::saveMovieState
+            )
         }
     }
 
@@ -214,7 +161,7 @@ class MovieViewModel @Inject constructor(
         else -> false
     }
 
-    fun canLoadMore() = _data.value is UiState.Success
+    fun canLoadMore() = _data.value is UiState.Success || _data.value is UiState.Empty
 
     companion object {
         val STATE_KEY = "saved_state"

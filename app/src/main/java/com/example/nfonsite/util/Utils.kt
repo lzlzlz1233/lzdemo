@@ -1,7 +1,10 @@
 package com.example.nfonsite.util
 
-import android.media.RouteListingPreference.Item
-import androidx.recyclerview.widget.RecyclerView
+import android.os.Build
+import androidx.annotation.RequiresExtension
+import androidx.lifecycle.MutableLiveData
+import com.example.domain.entities.DataState
+import com.example.domain.entities.ErrorType
 import com.example.domain.entities.MovieEntity
 import java.io.Serializable
 
@@ -32,3 +35,38 @@ fun combineItems(
     oldItems: List<FeedItem>,
     newItems: List<FeedItem>
 ) = oldItems + newItems
+
+
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+fun Result<*>.applyToState(
+    originalList: MutableList<FeedItem>,
+    data: MutableLiveData<UiState<MovieViewModel.ScreenContent>>,
+    query: String?="",
+    onSaveState: (UiState<MovieViewModel.ScreenContent>) -> Unit
+) {
+    when (this) {
+        is Result.Success -> {
+            if (this.data is DataState) {
+                val newMovieList =
+                    (this.data as DataState).items.map {
+                        it.toHeaderItem()
+                    }
+                originalList.addAll(newMovieList)
+                data.value =
+                    this.convertToUiState {
+                        MovieViewModel.ScreenContent(
+                            items = originalList,
+                            query = query,
+                            canLoadMore = (this.data as DataState).canLoadMore,
+                            nextOffset = (this.data as DataState).page + 1
+                        )
+                    }
+                onSaveState(data.value!!)
+            } else {
+                UiState.Error(ErrorType.OTHER.name)
+            }
+        }
+
+        is Result.Error -> data.value = UiState.Error(this.errorMessage)
+    }
+}
