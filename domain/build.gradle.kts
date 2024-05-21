@@ -49,4 +49,11 @@ dependencies {
     implementation(libs.retrofit.moshi)
     implementation(libs.android.moshi)
     implementation(libs.android.moshi.kotlin)
+
+    // tetsing
+    testImplementation(libs.mokito.test)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.junit)
+    testImplementation(libs.mokito.inline)
+    androidTestImplementation(libs.androidx.test.ext.junit)
 }

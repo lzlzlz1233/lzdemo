@@ -4,8 +4,8 @@ import com.squareup.moshi.Json
 
 
 data class ApiResponse<T: Any> (
-    @Json(name = "page") val page : Int = 0,
-    @Json(name = "total_pages") val total_page : Int = 0,
+    @Json(name = "page") var page : Int = 0,
+    @Json(name = "total_pages") var total_page : Int = 0,
     @Json(name = "results") var data : List<T> ?= null,
 )
 
