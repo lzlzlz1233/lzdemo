@@ -1,6 +1,6 @@
 # lzdemo
 ## Build tools & versions used
-Version: Android Studio Iguana | 2023.2.1 
+Version: Android Studio Jellyfish | 2023.3.1
 Java : 17.0
 Build Variant : Debug (Default)
 Gradle; 
@@ -8,23 +8,31 @@ Gradle;
 1) Open Android Studio, build Gradle, select app configuration with emulator Pixel 3a API 34 , then we should be able to run the app by clicking on the round  arrow on the green button
 ![Screenshot 2024-04-18 at 8 32 22 PM](https://github.com/lzlzlz1233/androidTestLZ/assets/159413314/cb902a5e-e211-4d38-8ce8-96c94a991abf)
 
+## Key UI made Decisions
+1. Search will be triggered  when user hit return when they finish typing (see demo)
+2. when user refresh all search queries will be reset
+3. There is no local persistence of data source given trending movies can change day by day
+4.  App Theme toggling is not supported
+
+
 ## Functional Requirements Brief Summary
 1. Render a grid of trending movies from the movie database API (poster image only)   ` Approach: See architecture design `
 
 2. Search movies from the movie database API (poster image only)   ` Approach: See architecture design `
 
-3. reload the grid ` Approach: SwipeRefreshLayout `
+4. reload the grid ` Approach: SwipeRefreshLayout `
 
-4. handle the normal variety of errors (empty, and error states)   `Approach: Simple Text View when errored out (see screen shot attached)`
+5. handle the normal variety of errors (empty, and error states)   `Approach: Simple Text View when errored out (see screen shot attached)`
 
-5. If images fail to load/Null , displaying a placeholder  `Approach: Glide`
+6. If images fail to load/Null , displaying a placeholder  `Approach: Glide`
 
-6. State preservation on orientation change `Approach: StateHandle`
+7. State preservation on orientation change `Approach: StateHandle`
    
 8. Overlay   `Approach: Simple Dialogfragment `
 
 9. Pagination (see demo)
 
+10 Unit tests (samples can be find in code)
 ## Demo
 
 # Trending:
