@@ -14,7 +14,6 @@ Gradle;
 3. There is no local persistence of data source given trending movies can change day by day
 4.  App Theme toggling is not supported
 
-
 ## Functional Requirements Brief Summary
 1. Render a grid of trending movies from the movie database API (poster image only)   ` Approach: See architecture design `
 
@@ -78,7 +77,7 @@ https://github.com/lzlzlz1233/lzdemo/assets/159413314/6d8db628-1efd-44a9-bfde-df
 
 
 ## Other things to consider:
-i18n, assassbility, user preference for theme (dark/light), auto scroll to top...
+Security /authorization for api access, i18n, assassbility, user preference for theme (dark/light), auto scroll to top...
 
 ## References
 references: Android open source github page
