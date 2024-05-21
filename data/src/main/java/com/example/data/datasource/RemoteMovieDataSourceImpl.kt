@@ -36,7 +36,8 @@ class RemoteMovieDataSourceImpl @Inject constructor(val apiService: GetMovieApiS
             name = rawApiModel.name,
             backDropPath = rawApiModel.backDropPath ?: "NA",
             posterPath = rawApiModel.posterPath ?: "NA",
-            page = page
+            page = page,
+            overview = rawApiModel.overview
         )
 
     private fun convertToDataState(items: List<MovieEntity>, page: Int, totalPage: Int) =

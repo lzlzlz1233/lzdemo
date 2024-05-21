@@ -105,7 +105,7 @@ class MainFragment : Fragment() {
         val fragment = MovieDetailFragment()
         fragment.arguments = Bundle().apply {
             val movie = (item as FeedItem.MovieItem).movie
-            this.putString(NAME_KEY, movie.id)
+            this.putString(NAME_KEY, movie.name)
             this.putString(IMAGE_KEY, "https://image.tmdb.org/t/p/w500" + movie.imgPath)
             this.putString(OVER_VIEW_KEY, movie.overView)
         }

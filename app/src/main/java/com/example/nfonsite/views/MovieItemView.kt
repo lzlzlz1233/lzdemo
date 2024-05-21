@@ -33,18 +33,15 @@ class MovieItemView @JvmOverloads constructor(
         this.setOnClickListener {
             onClick(item)
         }
-        val url ="https://image.tmdb.org/t/p/w500" + item.movie.imgPath
+        val url ="https://image.tmdb.org/t/p/w500" + item.movie.posterPath
         val width = resources.displayMetrics.widthPixels /3
         Glide.with(context)
             .load(url)
             .apply(options)
-            .placeholder(R.drawable.ic_launcher_background)
+            .placeholder(R.drawable.ic_launcher_foreground)
             .override(350,500)
             .into(binding.movieImage)
 
     }
 
-    fun getScreenWidth(){
-        val width = resources.displayMetrics.widthPixels
-    }
 }

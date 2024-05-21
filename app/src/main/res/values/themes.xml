@@ -6,4 +6,7 @@
     </style>
 
     <style name="Theme.NFonsite" parent="Base.Theme.NFonsite" />
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight"/>
+
 </resources>

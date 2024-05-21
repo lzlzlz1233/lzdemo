@@ -27,6 +27,10 @@ class MovieDetailFragment : DialogFragment() {
         _binding = DialogFragmentBinding.inflate(layoutInflater, container, false)
         setUpStyle()
         setUp(img, name, overview)
+        binding.close.setOnClickListener {
+            this.dismiss()
+        }
+
         return binding.root
     }
 
@@ -35,13 +39,14 @@ class MovieDetailFragment : DialogFragment() {
     }
 
     private fun setUp(img: String?, name : String?, overview: String?){
-        binding.title.text = img
+        binding.title.text = name
         binding.overView.text = overview
+        val width = resources.displayMetrics.widthPixels
         context?.let {
             Glide.with(it)
                 .load(img)
-                .placeholder(R.drawable.ic_launcher_background)
-                .override(350,500)
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .override(width,(width * 0.75).toInt())
                 .into(binding.image)
         }
     }
@@ -49,7 +54,7 @@ class MovieDetailFragment : DialogFragment() {
     companion object{
         val FRAG_TAG = "diaglog_frag"
         val IMAGE_KEY = "image_key"
-        val NAME_KEY = "image_key"
+        val NAME_KEY = "name_key"
         val OVER_VIEW_KEY = "overview_key"
     }
 }

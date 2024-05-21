@@ -31,7 +31,9 @@ sealed class UiState<out T : Any> {
 fun MovieEntity.toHeaderItem() = FeedItem.MovieItem(
     movie = MovieItemSpec(
         id = this.id,
-        imgPath = this.posterPath,
+        name = this.name,
+        imgPath = this.backDropPath,
+        posterPath = this.posterPath,
         overView = this.overview
     )
 )
