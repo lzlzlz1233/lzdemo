@@ -27,13 +27,13 @@ import com.example.nfonsite.util.UiState
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 class MainFragment : Fragment() {
 
-    private val PORTRIAT_SPAN_COUNT  = 3
-    private val LANDSCAPE_SPAN_COUNT  = 6
+    private val PORTRIAT_SPAN_COUNT = 3
+    private val LANDSCAPE_SPAN_COUNT = 6
 
     private var _binding: MainFragmentBinding? = null
     val binding: MainFragmentBinding get() = _binding!!
 
-    private var adapter: MovieAdapter?= null
+    private var adapter: MovieAdapter? = null
 
     private val viewModel: MovieViewModel by activityViewModels()
 
@@ -49,12 +49,11 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.search.clearFocus()
-        if (adapter == null){
+        if (adapter == null) {
             adapter = this.context?.let { MovieAdapter(it, this::openMovieDetail) }
         }
         binding.recycler.adapter = adapter
         setUpSpan()
-        binding.recycler.setPadding(0, 0, 0, 0)
         viewModel.data.observe(viewLifecycleOwner, this::updateUi)
         viewModel.getList()
         setUpSearchBar()
@@ -71,14 +70,17 @@ class MainFragment : Fragment() {
         binding.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (!recyclerView.canScrollVertically(1) && viewModel.canLoadMore()){
+                if (!recyclerView.canScrollVertically(1) && viewModel.canLoadMore()) {
                     viewModel.loadMore()
                 }
             }
         })
     }
 
-    private fun setUpSpan(){
+    /**
+    Set up different gridlayout manger span in different phone mode
+     **/
+    private fun setUpSpan() {
         val orientation = resources.configuration.orientation
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // In landscape
@@ -90,9 +92,9 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun setUpSearchBar(){
+    private fun setUpSearchBar() {
         binding.search.setOnKeyListener { v, keyCode, event ->
-            if(keyCode == KeyEvent.KEYCODE_ENTER){
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
                 val text = binding.search.getText().toString()
                 viewModel.search(text)
                 return@setOnKeyListener true
@@ -101,7 +103,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun openMovieDetail(item : FeedItem){
+    private fun openMovieDetail(item: FeedItem) {
         val fragment = MovieDetailFragment()
         fragment.arguments = Bundle().apply {
             val movie = (item as FeedItem.MovieItem).movie
@@ -109,7 +111,8 @@ class MainFragment : Fragment() {
             this.putString(IMAGE_KEY, "https://image.tmdb.org/t/p/w500" + movie.imgPath)
             this.putString(OVER_VIEW_KEY, movie.overView)
         }
-        activity?.supportFragmentManager?.beginTransaction()?.add(fragment,FRAG_TAG)?.commitNowAllowingStateLoss()
+        activity?.supportFragmentManager?.beginTransaction()?.add(fragment, FRAG_TAG)
+            ?.commitNowAllowingStateLoss()
     }
 
     private fun updateUi(state: UiState<MovieViewModel.ScreenContent>) {
@@ -130,7 +133,7 @@ class MainFragment : Fragment() {
                 binding.swipeLayout.isRefreshing = false
                 if (state.data.items.isEmpty()) {
                     setUpErrorView(R.string.no_found)
-                }else{
+                } else {
                     hideErrorView()
                 }
                 adapter?.updateList(state.data.items)
@@ -147,10 +150,11 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun hideErrorView(){
+    private fun hideErrorView() {
         binding.errorView.visibility = GONE
 
     }
+
     private fun setUpErrorView(res: Int) {
         context?.getString(res)
             ?.let { binding.errorView.setUp(it, this::onReloadClick) }
@@ -165,10 +169,5 @@ class MainFragment : Fragment() {
         super.onDestroyView()
         binding.search.clearFocus()
     }
-
-
-
-
-
 
 }

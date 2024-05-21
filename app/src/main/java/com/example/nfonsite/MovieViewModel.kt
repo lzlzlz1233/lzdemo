@@ -26,11 +26,17 @@ class MovieViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    // source list of all the items inside the fragment
     private var _movieList: MutableList<FeedItem> = mutableListOf()
 
     private var _data: MutableLiveData<UiState<ScreenContent>> = MutableLiveData()
     val data: LiveData<UiState<ScreenContent>> get() = _data
 
+
+    /**
+     * Public function consumed by Fragment to get trending movies
+     * @param query: string query
+     */
     fun getList() {
         getSavedData()
         if (shouldReload() || data.value is UiState.Empty || data.value is UiState.Error) {
@@ -38,6 +44,10 @@ class MovieViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Public function consumed by Fragment to search given user input
+     * @param query: string query
+     */
     fun search(query: String) {
         if (query.isEmpty()) {
             clear()
@@ -50,6 +60,9 @@ class MovieViewModel @Inject constructor(
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun searchMovie(query: String) {
         if (!shouldLoadNewItems()) return
+        /*
+        if this query is new, then we need to clear the current list and re-render
+         */
         if (isNewQuery(query)) clear()
         val offset = getCurrentOffset()
         _data.value = UiState.Loading
@@ -75,6 +88,8 @@ class MovieViewModel @Inject constructor(
             )
         }
     }
+
+
     private fun updateSearchQuery(query: String) {
         when (_data.value) {
             is UiState.Success -> {
@@ -84,6 +99,9 @@ class MovieViewModel @Inject constructor(
         }
     }
 
+    /**
+     * return if the current query user generate is the same as the previous one
+     */
     private fun isNewQuery(q: String): Boolean {
         return when (_data.value) {
             is UiState.Success -> {
@@ -107,6 +125,9 @@ class MovieViewModel @Inject constructor(
         else -> 1
     }
 
+    /**
+     * get data from state handle
+     */
     private fun getSavedData() {
         val savedData: UiState<ScreenContent>? =
             savedStateHandle.getLiveData<UiState<ScreenContent>>(STATE_KEY).value

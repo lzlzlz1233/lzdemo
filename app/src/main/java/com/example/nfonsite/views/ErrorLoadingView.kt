@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.nfonsite.databinding.ErrorLoadingViewBinding
 
+/**
+ * Error View to handle basic errors
+ */
 class ErrorLoadingView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

@@ -13,6 +13,9 @@ import com.example.nfonsite.MovieViewModel
 import com.example.nfonsite.uiModel.FeedItem
 import com.example.nfonsite.uiModel.MovieItemSpec
 
+/**
+ * extension func to convert [Result] to [UiState]
+ */
 fun <T : Any, R : Any> Result<T>.convertToUiState(converter: (T) -> R): UiState<R> {
     return when (this) {
         is Result.Error -> UiState.Error(errorMessage)
@@ -28,7 +31,10 @@ sealed class UiState<out T : Any> {
 
 }
 
-fun MovieEntity.toHeaderItem() = FeedItem.MovieItem(
+/**
+ * extension func to convert [MovieEntity] to [FeedItem]
+ */
+fun MovieEntity.toFeedItem() = FeedItem.MovieItem(
     movie = MovieItemSpec(
         id = this.id,
         name = this.name,
@@ -38,6 +44,9 @@ fun MovieEntity.toHeaderItem() = FeedItem.MovieItem(
     )
 )
 
+/***
+ * Business logic reusable to transform Result into UIState
+ */
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 fun Result<*>.applyToState(
     originalList: MutableList<FeedItem>,
@@ -50,7 +59,7 @@ fun Result<*>.applyToState(
             if (this.data is DataState) {
                 val newMovieList =
                     (this.data as DataState).items.map {
-                        it.toHeaderItem()
+                        it.toFeedItem()
                     }
                 originalList.addAll(newMovieList)
                 data.value =

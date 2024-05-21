@@ -10,6 +10,9 @@ import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.example.nfonsite.databinding.DialogFragmentBinding
 
+/**
+ * Simple Dialog Fragment to show overlay when clicking the grid
+ */
 class MovieDetailFragment : DialogFragment() {
 
     private var _binding: DialogFragmentBinding? = null

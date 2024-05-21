@@ -7,6 +7,11 @@ import com.example.domain.entities.DataState
 import com.example.domain.entities.MovieEntity
 import javax.inject.Inject
 
+/**
+ * Default implementation of [RemoteMovieDataSource]
+ *
+ * @param apiService - The network data source used to fetch movies
+ */
 class RemoteMovieDataSourceImpl @Inject constructor(val apiService: GetMovieApiService) :
     RemoteMovieDataSource {
 

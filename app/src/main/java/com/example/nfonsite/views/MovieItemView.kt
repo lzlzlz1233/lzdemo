@@ -12,6 +12,9 @@ import com.example.nfonsite.R
 import com.example.nfonsite.databinding.MovieItemViewBinding
 import com.example.nfonsite.uiModel.FeedItem
 
+/**
+ * Customized View responsible to render images inside the grid
+ */
 class MovieItemView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -41,7 +44,6 @@ class MovieItemView @JvmOverloads constructor(
             .placeholder(R.drawable.ic_launcher_foreground)
             .override(350,500)
             .into(binding.movieImage)
-
     }
 
 }
