@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditText
+        android:id="@+id/search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:saveEnabled="false"
+        android:textColorHint="@android:color/tertiary_text_light"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="16dp"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/button_background"
+        app:layout_constraintBottom_toTopOf="@+id/swipe_layout"
+        android:hint="@string/search_hint"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id= "@+id/swipe_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/search"
+        android:layout_marginVertical="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.example.nfonsite.views.ErrorLoadingView
+        android:id="@+id/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
