@@ -8,7 +8,7 @@ Gradle;
 1) Open Android Studio, build Gradle, select app configuration with emulator Pixel 3a API 34 , then we should be able to run the app by clicking on the round  arrow on the green button
 ![Screenshot 2024-04-18 at 8 32 22 PM](https://github.com/lzlzlz1233/androidTestLZ/assets/159413314/cb902a5e-e211-4d38-8ce8-96c94a991abf)
 
-## Key UI made Decisions
+## Key UI Decisions
 1. Search will be triggered  when user hit return when they finish typing (see demo)
 2. when user refresh all search queries will be reset
 3. There is no local persistence of data source given trending movies can change day by day
